@@ -33,15 +33,18 @@ production:
 	$(eval SERVICE_PRINCIPAL_NAME=s165p01-keyvault-readonly-access)
 	$(eval RESOURCE_GROUP_NAME=s165p01-rg)
 
+apply-for-qts:
+	$(eval DOMAINS_ID=afqts)
+
 deploy-azure-resources: ## make dev deploy-azure-resources CONFIRM_DEPLOY=1
 	$(if $(CONFIRM_DEPLOY), , $(error can only run with CONFIRM_DEPLOY))
 	pwsh ./azure/Set-ResourceGroup.ps1 -ResourceGroupName ${RESOURCE_GROUP_NAME} -Subscription ${AZURE_SUBSCRIPTION} -EnvironmentName ${DEPLOY_ENV} -ParametersFile "./azure/azuredeploy.${DEPLOY_ENV}.parameters.json" -ServicePrincipalName ${SERVICE_PRINCIPAL_NAME}
 
-custom-domains-init:
-	terraform -chdir=custom_domains init -upgrade -reconfigure -backend-config=workspace_variables/${DEPLOY_ENV}_backend.tfvars
+domains-base-init:
+	terraform -chdir=custom_domains/base init -upgrade -reconfigure -backend-config=workspace_variables/${DOMAINS_ID}_backend.tfvars
 
-custom-domains-plan: custom-domains-init
-	terraform -chdir=custom_domains plan -var-file workspace_variables/${DEPLOY_ENV}.tfvars.json
+domains-base-plan: domains-base-init
+	terraform -chdir=custom_domains/base plan -var-file workspace_variables/${DOMAINS_ID}.tfvars.json
 
-custom-domains-apply: custom-domains-init
-	terraform -chdir=custom_domains apply -var-file workspace_variables/${DEPLOY_ENV}.tfvars.json
+domains-base-apply: domains-base-init
+	terraform -chdir=custom_domains/base apply -var-file workspace_variables/${DOMAINS_ID}.tfvars.json
