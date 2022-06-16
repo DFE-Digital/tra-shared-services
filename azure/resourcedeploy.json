@@ -1,0 +1,324 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "keyVaultName": {
+      "type": "string"
+    },
+    "resourceGroupName": {
+      "type": "string"
+    },
+    "tfStorageAccountName": {
+      "type": "string"
+    },
+    "tfStorageContainerName": {
+      "type": "string"
+    },
+    "environment": {
+      "type": "string"
+    },
+    "dbBackupStorageAccountName": {
+      "type": "string",
+      "defaultValue": "false"
+    },
+    "dbBackupStorageContainerName": {
+      "type": "string",
+      "defaultValue": "false"
+    },
+    "tags": {
+      "type": "object"
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[deployment().location]",
+      "metadata": {
+        "description": "Location for the deployments and the resources"
+      }
+    }
+  },
+  "variables": {
+    "subscriptionId": "[subscription().subscriptionId]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "[format('create-{0}', parameters('resourceGroupName'))]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "resourceGroupName": {
+            "value": "[parameters('resourceGroupName')]"
+          },
+          "environment": {
+            "value": "[parameters('environment')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "tags": {
+            "value": "[parameters('tags')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "parameters": {
+            "resourceGroupName": {
+              "type": "string",
+              "metadata": {
+                "description": "Name of the resourceGroup."
+              }
+            },
+            "environment": {
+              "type": "string"
+            },
+            "location": {
+              "type": "string",
+              "defaultValue": "[parameters('location')]"
+            },
+            "tags": {
+              "type": "object",
+              "defaultValue": "[parameters('tags')]"
+            }
+          },
+          "variables": {
+            "environmentTag": { "Environment": "[parameters('environment')]" }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Resources/resourceGroups",
+              "apiVersion": "2021-04-01",
+              "name": "[parameters('resourceGroupName')]",
+              "location": "[parameters('location')]",
+              "tags": "[union(parameters('tags'),variables('environmentTag'))]",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "[format('nested-createResourceGroup-{0}', format('create-{0}', parameters('resourceGroupName')))]",
+      "subscriptionId": "[variables('subscriptionId')]",
+      "resourceGroup": "[parameters('resourceGroupName')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "keyVaultName": {
+            "value": "[parameters('keyVaultName')]"
+          },
+          "tfStorageAccountName": {
+            "value": "[parameters('tfStorageAccountName')]"
+          },
+          "tfStorageContainerName": {
+            "value": "[parameters('tfStorageContainerName')]"
+          },
+          "dbBackupStorageAccountName": {
+            "value": "[parameters('dbBackupStorageAccountName')]"
+          },
+          "dbBackupStorageContainerName": {
+            "value": "[parameters('dbBackupStorageContainerName')]"
+          },
+          "enabledForTemplateDeployment": {
+            "value": true
+          },
+          "objectId": {
+            "value": "[parameters('objectId')]"
+          },
+          "roleName": {
+            "value": "[parameters('roleName')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "parameters": {
+            "location": {
+              "type": "string"
+            },
+            "keyVaultName": {
+              "type": "string"
+            },
+            "tfStorageAccountName": {
+              "type": "string"
+            },
+            "tfStorageContainerName": {
+              "type": "string"
+            },
+            "dbBackupStorageAccountName": {
+              "type": "string"
+            },
+            "dbBackupStorageContainerName": {
+              "type": "string"
+            },
+            "enabledForTemplateDeployment": {
+              "type": "bool"
+            },
+            "objectId": {
+              "type": "string"
+            },
+            "roleName": {
+              "type": "string"
+            }
+          },
+          "variables": {
+            "tenantId": "[subscription().tenantId]"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Storage/storageAccounts",
+              "apiVersion": "2021-09-01",
+              "name": "[parameters('tfStorageAccountName')]",
+              "location": "[parameters('location')]",
+              "kind": "StorageV2",
+              "properties": {
+                "minimumTlsVersion": "TLS1_2",
+                "supportsHttpsTrafficOnly": true,
+                "allowBlobPublicAccess": false
+              },
+              "sku": {
+                "name": "Standard_ZRS"
+              }
+            },
+            {
+              "type": "Microsoft.Storage/storageAccounts/blobServices",
+              "apiVersion": "2021-09-01",
+              "name": "[format('{0}/default', parameters('tfStorageAccountName'))]",
+              "properties": {
+                "containerDeleteRetentionPolicy": {
+                  "allowPermanentDelete": false,
+                  "days": 30,
+                  "enabled": true
+                },
+                "deleteRetentionPolicy": {
+                  "allowPermanentDelete": false,
+                  "days": 30,
+                  "enabled": true
+                },
+                "isVersioningEnabled": true
+              },
+
+              "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('tfStorageAccountName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+              "apiVersion": "2021-09-01",
+              "name": "[format('{0}/default/{1}', parameters('tfStorageAccountName'), parameters('tfStorageContainerName'))]",
+              "properties": {
+                "publicAccess": "None"
+              },
+
+              "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('tfStorageAccountName'))]"
+              ]
+            },
+            {
+              "condition": "[not(equals(parameters('dbBackupStorageAccountName'), 'false'))]",
+              "type": "Microsoft.Storage/storageAccounts",
+              "apiVersion": "2019-06-01",
+              "name": "[parameters('dbBackupStorageAccountName')]",
+              "location": "[parameters('location')]",
+              "sku": {
+                "name": "Standard_GRS"
+              },
+              "kind": "StorageV2",
+              "properties": {
+                "IsVersioningEnabled": true
+              }
+            },
+            {
+              "condition": "[not(equals(parameters('dbBackupStorageAccountName'), 'false'))]",
+              "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+              "apiVersion": "2019-06-01",
+              "name": "[concat(parameters('dbBackupStorageAccountName'), '/default/', parameters('dbBackupStorageContainerName'))]",
+              "properties": {
+                "publicAccess": "None"
+              },
+              "dependsOn": [
+                "[concat('Microsoft.Storage/storageAccounts/', parameters('dbBackupStorageAccountName'))]"
+              ]
+            },
+            {
+              "condition": "[not(equals(parameters('dbBackupStorageAccountName'), 'false'))]",
+              "name": "[concat(parameters('dbBackupStorageAccountName'), '/default')]",
+              "type": "Microsoft.Storage/storageAccounts/managementPolicies",
+              "apiVersion": "2019-06-01",
+              "dependsOn": [
+                "[concat('Microsoft.Storage/storageAccounts/', parameters('dbBackupStorageAccountName'))]"
+              ],
+              "properties": {
+                "policy": {
+                  "rules": [
+                    {
+                      "name": "ruleDelete",
+                      "enabled": true,
+                      "type": "Lifecycle",
+                      "definition": {
+                        "filters": {
+                          "blobTypes": [
+                            "blockBlob"
+                          ],
+                          "prefixMatch": [
+                            "[parameters('dbBackupStorageContainerName')]"
+                          ]
+                        },
+                        "actions": {
+                          "baseBlob": {
+                            "delete": {
+                              "daysAfterModificationGreaterThan": 35
+                            }
+                          },
+                          "snapshot": {
+                            "delete": {
+                              "daysAfterCreationGreaterThan": 35
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "type": "Microsoft.KeyVault/vaults",
+              "apiVersion": "2021-10-01",
+              "name": "[parameters('keyVaultName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "enableSoftDelete": true,
+                "enabledForTemplateDeployment": "[parameters('enabledForTemplateDeployment')]",
+                "enableRbacAuthorization": true,
+                "enablePurgeProtection": true,
+                "tenantId": "[variables('tenantId')]",
+                "sku": {
+                  "family": "A",
+                  "name": "standard"
+                }
+              }
+            }
+          ],
+          "outputs": {}
+        }
+      },
+      "dependsOn": [
+        "[subscriptionResourceId(variables('subscriptionId'), 'Microsoft.Resources/deployments', format('create-{0}', parameters('resourceGroupName')))]"
+      ]
+    }
+  ]
+}
