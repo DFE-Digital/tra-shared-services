@@ -33,6 +33,33 @@ production:
 	$(eval SERVICE_PRINCIPAL_NAME=s165p01-keyvault-readonly-access)
 	$(eval RESOURCE_GROUP_NAME=s165p01-rg)
 
+apply-for-qts:
+	$(eval DOMAINS_ID=afqts)
+
 deploy-azure-resources: ## make dev deploy-azure-resources CONFIRM_DEPLOY=1
 	$(if $(CONFIRM_DEPLOY), , $(error can only run with CONFIRM_DEPLOY))
 	pwsh ./azure/Set-ResourceGroup.ps1 -ResourceGroupName ${RESOURCE_GROUP_NAME} -Subscription ${AZURE_SUBSCRIPTION} -EnvironmentName ${DEPLOY_ENV} -ParametersFile "./azure/azuredeploy.${DEPLOY_ENV}.parameters.json" -ServicePrincipalName ${SERVICE_PRINCIPAL_NAME}
+
+set-azure-account:
+	az account set -s ${AZURE_SUBSCRIPTION}
+
+set-production-subscription:
+	$(eval AZURE_SUBSCRIPTION=s165-teachingqualificationsservice-production)
+
+domains-infra-init: set-production-subscription set-azure-account
+	terraform -chdir=custom_domains/infrastructure init -upgrade -reconfigure -backend-config=workspace_variables/${DOMAINS_ID}_backend.tfvars
+
+domains-infra-plan: domains-infra-init
+	terraform -chdir=custom_domains/infrastructure plan -var-file workspace_variables/${DOMAINS_ID}.tfvars.json
+
+domains-infra-apply: domains-infra-init
+	terraform -chdir=custom_domains/infrastructure apply -var-file workspace_variables/${DOMAINS_ID}.tfvars.json
+
+domains-init: set-production-subscription set-azure-account
+	terraform -chdir=custom_domains/${DOMAINS_ID} init -upgrade -reconfigure -backend-config=workspace_variables/${DOMAINS_ID}_${DEPLOY_ENV}_backend.tfvars
+
+domains-plan: domains-init
+	terraform -chdir=custom_domains/${DOMAINS_ID} plan -var-file workspace_variables/${DOMAINS_ID}_${DEPLOY_ENV}.tfvars.json
+
+domains-apply: domains-init
+	terraform -chdir=custom_domains/${DOMAINS_ID} apply -var-file workspace_variables/${DOMAINS_ID}_${DEPLOY_ENV}.tfvars.json
