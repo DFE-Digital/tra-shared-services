@@ -1,5 +1,6 @@
 .DEFAULT_GOAL		:=help
 SHELL				:=/bin/bash
+ENABLE_STORAGE_VERSIONING = true
 
 .PHONY: help
 help: ## Show this help
@@ -36,3 +37,12 @@ production:
 deploy-azure-resources: ## make dev deploy-azure-resources CONFIRM_DEPLOY=1
 	$(if $(CONFIRM_DEPLOY), , $(error can only run with CONFIRM_DEPLOY))
 	pwsh ./azure/Set-ResourceGroup.ps1 -ResourceGroupName ${RESOURCE_GROUP_NAME} -Subscription ${AZURE_SUBSCRIPTION} -EnvironmentName ${DEPLOY_ENV} -ParametersFile "./azure/azuredeploy.${DEPLOY_ENV}.parameters.json" -ServicePrincipalName ${SERVICE_PRINCIPAL_NAME}
+
+deploy-azure-resources-bicep: ## make dev deploy-azure-resources CONFIRM_DEPLOY=1
+	$(if $(SERVICE_NAME), , $(error SERVICE_NAME is required))
+	$(if $(STORAGE_CONTAINERS), , $(error STORAGE_CONTAINERS is required. A string with ',' delimiter. example(STORAGE_CONTAINERS="container1,continer2,container3")))
+
+	[[ "${DRY_RUN}" = "true" ]]
+	az deployment sub create --template-file ./azure/azure.bicep --parameters serviceName=${SERVICE_NAME} resourceGroupLocation='WestEurope' environmentName=${DEPLOY_ENV} enableStorageVersioning=${ENABLE_STORAGE_VERSIONING} storageContainers=${STORAGE_CONTAINERS} --location WestEurope --what-if
+	[[ "${CONFIRM_DEPLOY}" = "YES" ]]
+	az deployment sub create --template-file ./azure/azure.bicep --parameters serviceName=${SERVICE_NAME} resourceGroupLocation='WestEurope' environmentName=${DEPLOY_ENV} enableStorageVersioning=${ENABLE_STORAGE_VERSIONING} storageContainers=${STORAGE_CONTAINERS} --location WestEurope

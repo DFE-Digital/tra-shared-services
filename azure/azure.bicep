@@ -10,7 +10,6 @@ param environmentName string
 param serviceName string
 param resourceGroupLocation string
 param enableStorageVersioning string
-// param principalId string
 param storageContainers string
 
 var containersArray = split(storageContainers, ',')
@@ -69,13 +68,7 @@ resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-01-01' = {
   tags: union(commonTags, serviceSettings[serviceName].serviceTags)
 }
 
-// module rbacModule 'rbac.bicep' = {
-//   name: 'rbacModule'
-//   scope: resourceGroup
-//   params: {
-//     principalId: principalId
-//   }
-// }
+
 
 module storageModule 'storage.bicep' = {
   name: 'storageModule'
