@@ -21,7 +21,7 @@ test:
 
 .PHONY: pre-production
 pre-production:
-	$(eval DEPLOY_ENV=pre-production)
+	$(eval DEPLOY_ENV=preprod)
 	$(eval AZURE_SUBSCRIPTION=s165-teachingqualificationsservice-test)
 	$(eval SERVICE_PRINCIPAL_NAME=s165t01-preprod-keyvault-readonly-access)
 	$(eval RESOURCE_GROUP_NAME=s165t01-preprod-rg)
@@ -58,7 +58,7 @@ domains-infra-apply: domains-infra-init
 domains-init: set-production-subscription set-azure-account
 	terraform -chdir=custom_domains/${DOMAINS_ID} init -upgrade -reconfigure -backend-config=workspace_variables/${DOMAINS_ID}_${DEPLOY_ENV}_backend.tfvars
 
-domains-plan: domains-init
+domains-plan: domains-init  #make apply-for-qts pre-production domains-plan
 	terraform -chdir=custom_domains/${DOMAINS_ID} plan -var-file workspace_variables/${DOMAINS_ID}_${DEPLOY_ENV}.tfvars.json
 
 domains-apply: domains-init
