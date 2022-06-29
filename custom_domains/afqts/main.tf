@@ -12,8 +12,8 @@ data "azurerm_cdn_frontdoor_profile" "main" {
   resource_group_name = var.resource_group_name
 }
 
-resource "azurerm_cdn_frontdoor_rule_set" "example" {
-  name                     = "redirectwww"
+resource "azurerm_cdn_frontdoor_rule_set" "ruleset" {
+  name                     = var.ruleset_name
   cdn_frontdoor_profile_id = data.azurerm_cdn_frontdoor_profile.main.id
 }
 
