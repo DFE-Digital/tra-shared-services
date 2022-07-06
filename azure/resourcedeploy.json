@@ -19,11 +19,11 @@
     },
     "dbBackupStorageAccountName": {
       "type": "string",
-      "defaultValue": "false"
+      "defaultValue": ""
     },
     "dbBackupStorageContainerName": {
       "type": "string",
-      "defaultValue": "false"
+      "defaultValue": ""
     },
     "tags": {
       "type": "object"
@@ -213,7 +213,7 @@
               ]
             },
             {
-              "condition": "[not(equals(parameters('dbBackupStorageAccountName'), 'false'))]",
+              "condition": "[not(empty(parameters('dbBackupStorageAccountName')))]",
               "type": "Microsoft.Storage/storageAccounts",
               "apiVersion": "2019-06-01",
               "name": "[parameters('dbBackupStorageAccountName')]",
@@ -227,7 +227,7 @@
               }
             },
             {
-              "condition": "[not(equals(parameters('dbBackupStorageAccountName'), 'false'))]",
+              "condition": "[not(empty(parameters('dbBackupStorageAccountName')))]",
               "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
               "apiVersion": "2019-06-01",
               "name": "[concat(parameters('dbBackupStorageAccountName'), '/default/', parameters('dbBackupStorageContainerName'))]",
@@ -239,7 +239,7 @@
               ]
             },
             {
-              "condition": "[not(equals(parameters('dbBackupStorageAccountName'), 'false'))]",
+              "condition": "[not(empty(parameters('dbBackupStorageAccountName')))]",
               "name": "[concat(parameters('dbBackupStorageAccountName'), '/default')]",
               "type": "Microsoft.Storage/storageAccounts/managementPolicies",
               "apiVersion": "2019-06-01",
