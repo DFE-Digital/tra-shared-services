@@ -19,11 +19,11 @@
     },
     "dbBackupStorageAccountName": {
       "type": "string",
-      "defaultValue": "false"
+      "defaultValue": ""
     },
     "dbBackupStorageContainerName": {
       "type": "string",
-      "defaultValue": "false"
+      "defaultValue": ""
     },
     "tags": {
       "type": "object"
@@ -37,7 +37,8 @@
     }
   },
   "variables": {
-    "subscriptionId": "[subscription().subscriptionId]"
+    "subscriptionId": "[subscription().subscriptionId]",
+    "deployBackupStorage": "[and(not(empty(parameters('dbBackupStorageAccountName'))),not(empty(parameters('dbBackupStorageContainerName'))))]"
   },
   "resources": [
     {
@@ -102,7 +103,7 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2020-10-01",
-      "name": "[format('nested-createResourceGroup-{0}', format('create-{0}', parameters('resourceGroupName')))]",
+      "name": "[format('create-{0}-required-resources', parameters('resourceGroupName'))]",
       "subscriptionId": "[variables('subscriptionId')]",
       "resourceGroup": "[parameters('resourceGroupName')]",
       "properties": {
@@ -123,12 +124,6 @@
           "tfStorageContainerName": {
             "value": "[parameters('tfStorageContainerName')]"
           },
-          "dbBackupStorageAccountName": {
-            "value": "[parameters('dbBackupStorageAccountName')]"
-          },
-          "dbBackupStorageContainerName": {
-            "value": "[parameters('dbBackupStorageContainerName')]"
-          },
           "enabledForTemplateDeployment": {
             "value": true
           }
@@ -147,12 +142,6 @@
               "type": "string"
             },
             "tfStorageContainerName": {
-              "type": "string"
-            },
-            "dbBackupStorageAccountName": {
-              "type": "string"
-            },
-            "dbBackupStorageContainerName": {
               "type": "string"
             },
             "enabledForTemplateDeployment": {
@@ -213,7 +202,68 @@
               ]
             },
             {
-              "condition": "[not(equals(parameters('dbBackupStorageAccountName'), 'false'))]",
+              "type": "Microsoft.KeyVault/vaults",
+              "apiVersion": "2021-10-01",
+              "name": "[parameters('keyVaultName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "enableSoftDelete": true,
+                "enabledForTemplateDeployment": "[parameters('enabledForTemplateDeployment')]",
+                "enableRbacAuthorization": true,
+                "enablePurgeProtection": true,
+                "tenantId": "[variables('tenantId')]",
+                "sku": {
+                  "family": "A",
+                  "name": "standard"
+                }
+              }
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[subscriptionResourceId(variables('subscriptionId'), 'Microsoft.Resources/deployments', format('create-{0}', parameters('resourceGroupName')))]"
+      ]
+    },
+    {
+      "condition": "[variables('deployBackupStorage')]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "[format('create-{0}-optional-backup-storage', parameters('resourceGroupName'))]",
+      "subscriptionId": "[variables('subscriptionId')]",
+      "resourceGroup": "[parameters('resourceGroupName')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "dbBackupStorageAccountName": {
+            "value": "[parameters('dbBackupStorageAccountName')]"
+          },
+          "dbBackupStorageContainerName": {
+            "value": "[parameters('dbBackupStorageContainerName')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "parameters": {
+            "location": {
+              "type": "string"
+            },
+            "dbBackupStorageAccountName": {
+              "type": "string"
+            },
+            "dbBackupStorageContainerName": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
               "type": "Microsoft.Storage/storageAccounts",
               "apiVersion": "2019-06-01",
               "name": "[parameters('dbBackupStorageAccountName')]",
@@ -227,7 +277,6 @@
               }
             },
             {
-              "condition": "[not(equals(parameters('dbBackupStorageAccountName'), 'false'))]",
               "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
               "apiVersion": "2019-06-01",
               "name": "[concat(parameters('dbBackupStorageAccountName'), '/default/', parameters('dbBackupStorageContainerName'))]",
@@ -239,7 +288,6 @@
               ]
             },
             {
-              "condition": "[not(equals(parameters('dbBackupStorageAccountName'), 'false'))]",
               "name": "[concat(parameters('dbBackupStorageAccountName'), '/default')]",
               "type": "Microsoft.Storage/storageAccounts/managementPolicies",
               "apiVersion": "2019-06-01",
@@ -279,26 +327,8 @@
                   ]
                 }
               }
-            },
-            {
-              "type": "Microsoft.KeyVault/vaults",
-              "apiVersion": "2021-10-01",
-              "name": "[parameters('keyVaultName')]",
-              "location": "[parameters('location')]",
-              "properties": {
-                "enableSoftDelete": true,
-                "enabledForTemplateDeployment": "[parameters('enabledForTemplateDeployment')]",
-                "enableRbacAuthorization": true,
-                "enablePurgeProtection": true,
-                "tenantId": "[variables('tenantId')]",
-                "sku": {
-                  "family": "A",
-                  "name": "standard"
-                }
-              }
             }
-          ],
-          "outputs": {}
+          ]
         }
       },
       "dependsOn": [
