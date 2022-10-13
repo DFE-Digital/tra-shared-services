@@ -39,6 +39,9 @@ apply-for-qts:
 getanid:
 	$(eval DOMAINS_ID=getanid)
 
+aytp:
+	$(eval DOMAINS_ID=aytp)
+
 deploy-azure-resources: ## make dev deploy-azure-resources CONFIRM_DEPLOY=1
 	$(if $(CONFIRM_DEPLOY), , $(error can only run with CONFIRM_DEPLOY))
 	pwsh ./azure/Set-ResourceGroup.ps1 -ResourceGroupName ${RESOURCE_GROUP_NAME} -Subscription ${AZURE_SUBSCRIPTION} -EnvironmentName ${DEPLOY_ENV} -ParametersFile "./azure/azuredeploy.${DEPLOY_ENV}.parameters.json" -ServicePrincipalName ${SERVICE_PRINCIPAL_NAME}
@@ -66,3 +69,6 @@ domains-plan: domains-init  #make apply-for-qts pre-production domains-plan
 
 domains-apply: domains-init # make getanid pre-production domains-apply
 	terraform -chdir=custom_domains/${DOMAINS_ID} apply -var-file workspace_variables/${DOMAINS_ID}_${DEPLOY_ENV}.tfvars.json
+
+domains-destroy: domains-init # make getanid pre-production domains-apply
+	terraform -chdir=custom_domains/${DOMAINS_ID} destroy -var-file workspace_variables/${DOMAINS_ID}_${DEPLOY_ENV}.tfvars.json
