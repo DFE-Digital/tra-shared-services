@@ -31,6 +31,10 @@
       "metadata": {
         "description": "Location for the deployments and the resources"
       }
+    },
+    "utcValue": {
+      "type": "string",
+      "defaultValue": "[utcNow('yyMMddHHmmss')]"
     }
   },
   "variables": {
@@ -49,7 +53,7 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2020-10-01",
-      "name": "[format('create-{0}', parameters('tfStorageAccountName'))]",
+      "name": "[format('create-{0}-{1}', parameters('tfStorageAccountName'), parameters('utcValue'))]",
       "resourceGroup": "[parameters('resourceGroupName')]",
       "properties": {
         "mode": "Incremental",
@@ -74,7 +78,7 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2020-10-01",
-      "name": "[format('create-{0}', parameters('tfStorageContainerName'))]",
+      "name": "[format('create-{0}-{1}', parameters('tfStorageContainerName'), parameters('utcValue'))]",
       "resourceGroup": "[parameters('resourceGroupName')]",
       "properties": {
         "mode": "Incremental",
@@ -92,13 +96,13 @@
         }
       },
       "dependsOn": [
-        "[format('create-{0}', parameters('tfStorageAccountName'))]"
+        "[format('create-{0}-{1}', parameters('tfStorageAccountName'), parameters('utcValue'))]"
       ]
     },
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2020-10-01",
-      "name": "[format('create-{0}', parameters('keyVaultName'))]",
+      "name": "[format('create-{0}-{1}', parameters('keyVaultName'), parameters('utcValue'))]",
       "resourceGroup": "[parameters('resourceGroupName')]",
       "properties": {
         "mode": "Incremental",
@@ -123,7 +127,7 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2020-10-01",
-      "name": "[format('create-{0}-account', parameters('dbBackupStorageAccountName'))]",
+      "name": "[format('create-{0}-account-{1}', parameters('dbBackupStorageAccountName'), parameters('utcValue'))]",
       "condition": "[variables('deployBackupStorage')]",
       "resourceGroup": "[parameters('resourceGroupName')]",
       "properties": {
@@ -149,7 +153,7 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2020-10-01",
-      "name": "[format('create-{0}-container', parameters('dbBackupStorageContainerName'))]",
+      "name": "[format('create-{0}-container-{1}', parameters('dbBackupStorageContainerName'), parameters('utcValue'))]",
       "condition": "[variables('deployBackupStorage')]",
       "resourceGroup": "[parameters('resourceGroupName')]",
       "properties": {
@@ -168,13 +172,13 @@
         }
       },
       "dependsOn": [
-        "[format('create-{0}-account', parameters('dbBackupStorageAccountName'))]"
+        "[format('create-{0}-account-{1}', parameters('dbBackupStorageAccountName'), parameters('utcValue'))]"
       ]
     },
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2020-10-01",
-      "name": "[format('create-{0}-mgmt-policy', parameters('dbBackupStorageAccountName'))]",
+      "name": "[format('create-{0}-mgmt-policy-{1}', parameters('dbBackupStorageAccountName'), parameters('utcValue'))]",
       "condition": "[variables('deployBackupStorage')]",
       "resourceGroup": "[parameters('resourceGroupName')]",
       "properties": {
@@ -193,7 +197,7 @@
         }
       },
       "dependsOn": [
-        "[format('create-{0}-account', parameters('dbBackupStorageAccountName'))]"
+        "[format('create-{0}-account-{1}', parameters('dbBackupStorageAccountName'), parameters('utcValue'))]"
       ]
     }
   ]
