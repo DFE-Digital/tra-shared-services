@@ -4,7 +4,6 @@ module "domains" {
   front_door_name     = var.front_door_name
   resource_group_name = var.resource_group_name
   domains             = var.domains
-  tags                = local.tags
 }
 
 data "azurerm_cdn_frontdoor_profile" "main" {
