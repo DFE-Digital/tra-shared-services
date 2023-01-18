@@ -42,6 +42,12 @@ getanid:
 aytp:
 	$(eval DOMAINS_ID=aytp)
 
+rsm:
+	$(eval DOMAINS_ID=rsm)
+
+trngen:
+	$(eval DOMAINS_ID=trngen)
+
 deploy-azure-resources: ## make dev deploy-azure-resources CONFIRM_DEPLOY=1
 	$(if $(CONFIRM_DEPLOY), , $(error can only run with CONFIRM_DEPLOY))
 	pwsh ./azure/Set-ResourceGroup.ps1 -ResourceGroupName ${RESOURCE_GROUP_NAME} -Subscription ${AZURE_SUBSCRIPTION} -EnvironmentName ${DEPLOY_ENV} -ParametersFile "./azure/azuredeploy.${DEPLOY_ENV}.parameters.json" -ServicePrincipalName ${SERVICE_PRINCIPAL_NAME}
