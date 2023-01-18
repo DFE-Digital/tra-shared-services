@@ -1,5 +1,5 @@
 module "domains" {
-  source              = "git::https://github.com/DFE-Digital/terraform-modules.git//domains/environment_domains"
+  source              = "git::https://github.com/DFE-Digital/terraform-modules.git//domains/environment_domains?ref=v0.4.0"
   zone                = var.zone
   front_door_name     = var.front_door_name
   resource_group_name = var.resource_group_name
