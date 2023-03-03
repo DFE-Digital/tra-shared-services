@@ -1,11 +1,12 @@
 module "domains" {
-  source              = "git::https://github.com/DFE-Digital/terraform-modules.git//domains/environment_domains?ref=v0.3.0"
+  source              = "git::https://github.com/DFE-Digital/terraform-modules.git//domains/environment_domains?ref=0.5.2"
   zone                = var.zone
   front_door_name     = var.front_door_name
   resource_group_name = var.resource_group_name
   domains             = var.domains
   environment         = var.environment_short
   host_name           = data.azurerm_linux_web_app.app.default_hostname
+  rule_set_ids        = [azurerm_cdn_frontdoor_rule_set.ruleset.id]
 
 }
 
