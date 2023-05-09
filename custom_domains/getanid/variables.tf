@@ -9,4 +9,3 @@ variable "app_sub_id" {}
 variable "redirect_rules" {
   default = {}
 }
-
