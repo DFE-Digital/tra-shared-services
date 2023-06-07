@@ -1,5 +1,11 @@
-# Updated 2023-05-26 by malcolm1.baig@education.gov.uk
+# DO NOT UPDATE WITHOUT CODE REVIEW
+# Raise a PR for any changes here https://github.com/DFE-Digital/tra-shared-services/
+#
+# 1. Edit the logstash/pipeline.rb file
+# 2. Raise a PR
+# 3. Once merged, copy/paste the contents of the file, replacing everything below
 
+# Updated 2023-05-26 by malcolm1.baig@education.gov.uk
 filter {
 # If the event originates from a service hosted in GOVUK PaaS
   if "space_name" in [message] {
