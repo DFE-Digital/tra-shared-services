@@ -47,7 +47,7 @@
     }
   },
   "variables": {
-    "deploymentUrlBase": "https://raw.githubusercontent.com/DFE-Digital/tra-shared-services/main/azure/templates/",
+    "deploymentUrlBase": "https://raw.githubusercontent.com/DFE-Digital/tra-shared-services/428-formalise-approach-to-secrets-in-aks-3/azure/templates/",
     "deployBackupStorage": "[and(not(empty(parameters('dbBackupStorageAccountName'))),not(empty(parameters('dbBackupStorageContainerName'))))]"
   },
   "resources": [
@@ -117,8 +117,8 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "contentVersion": "1.0.0.0",
-          "relativePath": "templates/key-vault.json"
+          "uri": "[concat(variables('deploymentUrlBase'),'key-vault.json')]",
+          "contentVersion": "1.0.0.0"
         },
         "parameters": {
           "location": {
