@@ -118,7 +118,8 @@
         "mode": "Incremental",
         "templateLink": {
           "uri": "[concat(variables('deploymentUrlBase'),'key-vault.json')]",
-          "contentVersion": "1.0.0.0"
+          "contentVersion": "1.0.0.0",
+          "relativePath": "templates/key-vault.json"
         },
         "parameters": {
           "location": {
