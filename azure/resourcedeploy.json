@@ -3,7 +3,12 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "keyVaultName": {
-      "type": "string"
+      "type": "string",
+      "defaultValue": ""
+    },
+    "keyVaultNames": {
+      "type": "array",
+      "defaultValue": []
     },
     "resourceGroupName": {
       "type": "string"
@@ -103,6 +108,7 @@
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2020-10-01",
       "name": "[format('create-{0}-{1}', parameters('keyVaultName'), parameters('utcValue'))]",
+      "condition": "[not(empty(parameters('keyVaultName')))]",
       "resourceGroup": "[parameters('resourceGroupName')]",
       "properties": {
         "mode": "Incremental",
@@ -116,6 +122,35 @@
           },
           "keyVaultName": {
             "value": "[parameters('keyVaultName')]"
+          },
+          "enabledForTemplateDeployment": {
+            "value": true
+          }
+        }
+      },
+      "dependsOn": ["[parameters('resourceGroupName')]"]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "[format('create-{0}-{1}', parameters('keyVaultNames')[copyIndex()], parameters('utcValue'))]",
+      "copy": {
+        "name": "keyVaultNames",
+        "count": "[length(parameters('keyVaultNames'))]"
+      },
+      "resourceGroup": "[parameters('resourceGroupName')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'key-vault.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "keyVaultName": {
+            "value": "[parameters('keyVaultNames')[copyIndex()]]"
           },
           "enabledForTemplateDeployment": {
             "value": true
