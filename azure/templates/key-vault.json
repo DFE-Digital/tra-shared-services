@@ -10,6 +10,9 @@
     },
     "enabledForTemplateDeployment": {
       "type": "bool"
+    },
+    "enablePurgeProtection": {
+      "type": "bool"
     }
   },
   "variables": {
@@ -25,7 +28,7 @@
         "enableSoftDelete": true,
         "enabledForTemplateDeployment": "[parameters('enabledForTemplateDeployment')]",
         "enableRbacAuthorization": true,
-        "enablePurgeProtection": true,
+        "enablePurgeProtection": "[parameters('enablePurgeProtection')]",
         "tenantId": "[variables('tenantId')]",
         "sku": {
           "family": "A",
