@@ -10,6 +10,10 @@
       "type": "array",
       "defaultValue": []
     },
+    "enableKVPurgeProtection": {
+      "type": "bool",
+      "defaultValue": true
+    },
     "resourceGroupName": {
       "type": "string"
     },
@@ -154,6 +158,9 @@
           },
           "enabledForTemplateDeployment": {
             "value": true
+          },
+          "enablePurgeProtection": {
+            "value": "[parameters('enablePurgeProtection')]"
           }
         }
       },
