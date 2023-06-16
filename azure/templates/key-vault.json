@@ -17,8 +17,7 @@
     }
   },
   "variables": {
-    "tenantId": "[subscription().tenantId]",
-    "enablePurgeProtection": "[if(parameters('enablePurgeProtection'),true(),json('null'))]"
+    "tenantId": "[subscription().tenantId]"
   },
   "resources": [
     {
@@ -30,7 +29,7 @@
         "enableSoftDelete": true,
         "enabledForTemplateDeployment": "[parameters('enabledForTemplateDeployment')]",
         "enableRbacAuthorization": true,
-        "enablePurgeProtection": "[variables('enablePurgeProtection')]",
+        "enablePurgeProtection": "[if(parameters('enablePurgeProtection'),true(),json('null'))]",
         "tenantId": "[variables('tenantId')]",
         "sku": {
           "family": "A",
