@@ -53,6 +53,9 @@ aytq:  ## apply to service:  Access Your Teaching Qualifications
 	$(eval DOMAINS_ID=aytq)
 	$(eval PRODUCT_NAME=Access Your Teaching Qualifications)
 
+crt: aytq ## apply to service:  check-a-record of a teacher
+	$(eval DEPLOY_ENV=${DEPLOY_ENV}_crt)
+
 rsm:  ## apply to service:  Refer Serious Misconduct
 	$(eval DOMAINS_ID=rsm)
 	$(eval PRODUCT_NAME=Refer Serious Misconduct)
@@ -62,7 +65,7 @@ trngen:  ## apply to service:  Database of Qualified Teachers
 	$(eval PRODUCT_NAME=Database of Qualified Teachers)
 
 deploy-azure-resources: set-azure-account set-azure-template-tag set-azure-resource-group-tags   ## make deploy-azure-resources production <apply to service> - setup store for terraform state and keyvault storage, only use w/ production environment, use AUTO_APPROVE=1
-	$(if ${AUTO_APPROVE}, , $(error can only run with AUTO_APPROVE)) 
+	$(if ${AUTO_APPROVE}, , $(error can only run with AUTO_APPROVE))
 	az deployment sub create --name "resourcedeploy-${DOMAINS_ID}domains-$(shell date +%Y%m%d%H%M%S)" -l "West Europe" --template-uri "https://raw.githubusercontent.com/DFE-Digital/tra-shared-services/${ARM_TEMPLATE_TAG}/azure/resourcedeploy.json" \
 		--parameters "resourceGroupName=${RESOURCE_NAME_PREFIX}-${DOMAINS_ID}domains-rg" 'tags=${RG_TAGS}' \
 			"tfStorageAccountName=${RESOURCE_NAME_PREFIX}${DOMAINS_ID}domainstf" "tfStorageContainerName=${DOMAINS_ID}domains-tf" \
@@ -96,7 +99,7 @@ domains-plan: domains-init  ## make <env> <apply to service>  domains-(terraform
 	terraform -chdir=custom_domains/${DOMAINS_ID} plan -var-file workspace_variables/${DOMAINS_ID}_${DEPLOY_ENV}.tfvars.json
 
 domains-state: domains-init  ## make <env> <apply to service>  domains-(terraform workflow)  - setup (show state)  Azure Frontdoor/CDN for that service environment
-	terraform -chdir=custom_domains/${DOMAINS_ID} show 
+	terraform -chdir=custom_domains/${DOMAINS_ID} show
 
 domains-apply: domains-init ## make <env> <apply to service>  donains-(terraform workflow)  - setup (apply) Azure Frontdoor/CDN for that service environment
 	terraform -chdir=custom_domains/${DOMAINS_ID} apply -var-file workspace_variables/${DOMAINS_ID}_${DEPLOY_ENV}.tfvars.json
