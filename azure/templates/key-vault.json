@@ -3,17 +3,27 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "location": {
-      "type": "string"
+      "type": "string",
+      "defaultValue": "uksouth"
     },
     "keyVaultName": {
       "type": "string"
     },
     "enabledForTemplateDeployment": {
-      "type": "bool"
+      "type": "bool",
+      "defaultValue": true
     },
     "enablePurgeProtection": {
       "type": "bool",
       "defaultValue": true
+    },
+    "logAnalyticsWorkspaceName": {
+      "type": "string",
+      "optional": true
+    },
+    "enableDiagnostics": {
+      "type": "bool",
+      "defaultValue": false
     }
   },
   "variables": {
@@ -35,6 +45,26 @@
           "family": "A",
           "name": "standard"
         }
+      }
+    },
+    {
+      "condition": "[parameters('enableDiagnostics')]",
+      "type": "Microsoft.KeyVault/vaults/providers/diagnosticsettings",
+      "apiVersion": "2017-05-01-preview",
+      "name": "[format('{0}/Microsoft.Insights/diagnosticSettings', parameters('keyVaultName'))]",
+      "properties": {
+        "name": "keyVaultDiagnosticSettings",
+        "workspaceId": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceName'))]",
+        "logs": [
+          {
+            "category": "AuditEvent",
+            "enabled": true
+          },
+          {
+            "category": "AzurePolicyEvaluationDetails",
+            "enabled": true
+          }
+        ]
       }
     }
   ]
