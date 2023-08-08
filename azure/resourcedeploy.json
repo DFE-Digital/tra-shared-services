@@ -2,13 +2,14 @@
   "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
+    "keyVaultNames": {
+      "type": "array",
+      "defaultValue": [],
+      "optional": true
+    },
     "keyVaultName": {
       "type": "string",
       "defaultValue": ""
-    },
-    "keyVaultNames": {
-      "type": "array",
-      "defaultValue": []
     },
     "enableKVPurgeProtection": {
       "type": "bool",
@@ -34,16 +35,25 @@
     "tags": {
       "type": "object"
     },
-    "location": {
-      "type": "string",
-      "defaultValue": "[deployment().location]",
-      "metadata": {
-        "description": "Location for the deployments and the resources"
-      }
-    },
     "utcValue": {
       "type": "string",
       "defaultValue": "[utcNow('yyMMddHHmmss')]"
+    },
+    "sku": {
+      "type": "string",
+      "defaultValue": "PerGB2018"
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "uksouth"
+    },
+    "enableDiagnostics": {
+      "type": "bool",
+      "defaultValue": false
+    },
+    "logAnalyticsWorkspaceName": {
+      "type": "string",
+      "optional": true
     }
   },
   "variables": {
@@ -82,7 +92,9 @@
           }
         }
       },
-      "dependsOn": ["[parameters('resourceGroupName')]"]
+      "dependsOn": [
+        "[parameters('resourceGroupName')]"
+      ]
     },
     {
       "type": "Microsoft.Resources/deployments",
@@ -131,10 +143,18 @@
           },
           "enablePurgeProtection": {
             "value": "[parameters('enableKVPurgeProtection')]"
+          },
+          "enableDiagnostics": {
+            "value": "[parameters('enableDiagnostics')]"
+          },
+          "logAnalyticsWorkspaceName": {
+            "value": "[parameters('logAnalyticsWorkspaceName')]"
           }
         }
       },
-      "dependsOn": ["[parameters('resourceGroupName')]"]
+      "dependsOn": [
+        "[parameters('resourceGroupName')]"
+      ]
     },
     {
       "type": "Microsoft.Resources/deployments",
@@ -162,10 +182,18 @@
           },
           "enablePurgeProtection": {
             "value": "[parameters('enableKVPurgeProtection')]"
+          },
+          "enableDiagnostics": {
+            "value": "[parameters('enableDiagnostics')]"
+          },
+          "logAnalyticsWorkspaceName": {
+            "value": "[parameters('logAnalyticsWorkspaceName')]"
           }
         }
       },
-      "dependsOn": ["[parameters('resourceGroupName')]"]
+      "dependsOn": [
+        "[parameters('resourceGroupName')]"
+      ]
     },
     {
       "type": "Microsoft.Resources/deployments",
@@ -191,7 +219,33 @@
           }
         }
       },
-      "dependsOn": ["[parameters('resourceGroupName')]"]
+      "dependsOn": [
+        "[parameters('resourceGroupName')]"
+      ]
+    },
+    {
+      "condition": "[parameters('enableDiagnostics')]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "[format('create-{0}-account-{1}', parameters('logAnalyticsWorkspaceName'), parameters('utcValue'))]",
+      "resourceGroup": "[parameters('resourceGroupName')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "relativePath": "templates/log-analytics.json"
+        },
+        "parameters": {
+          "logAnalyticsWorkspaceName": {
+            "value": "[parameters('logAnalyticsWorkspaceName')]"
+          },
+          "sku": {
+            "value": "[parameters('sku')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          }
+        }
+      }
     },
     {
       "type": "Microsoft.Resources/deployments",
