@@ -5,13 +5,8 @@
     "logAnalyticsWorkspaceName": {
       "type": "string"
     },
-    "sku": {
-      "type": "string",
-      "defaultValue": "PerGB2018"
-    },
     "location": {
-      "type": "string",
-      "defaultValue": "uksouth"
+      "type": "string"
     }
   },
   "resources": [
@@ -22,7 +17,7 @@
       "location": "[parameters('location')]",
       "properties": {
         "sku": {
-          "name": "[parameters('sku')]"
+          "name": "PerGB2018"
         }
       }
     }
