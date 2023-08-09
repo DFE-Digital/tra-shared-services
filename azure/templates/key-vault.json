@@ -3,8 +3,7 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "location": {
-      "type": "string",
-      "defaultValue": "uksouth"
+      "type": "string"
     },
     "keyVaultName": {
       "type": "string"
@@ -18,8 +17,7 @@
       "defaultValue": true
     },
     "logAnalyticsWorkspaceName": {
-      "type": "string",
-      "optional": true
+      "type": "string"
     },
     "enableDiagnostics": {
       "type": "bool",

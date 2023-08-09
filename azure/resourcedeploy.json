@@ -4,8 +4,7 @@
   "parameters": {
     "keyVaultNames": {
       "type": "array",
-      "defaultValue": [],
-      "optional": true
+      "defaultValue": []
     },
     "keyVaultName": {
       "type": "string",
@@ -39,13 +38,12 @@
       "type": "string",
       "defaultValue": "[utcNow('yyMMddHHmmss')]"
     },
-    "sku": {
-      "type": "string",
-      "defaultValue": "PerGB2018"
-    },
     "location": {
       "type": "string",
-      "defaultValue": "uksouth"
+      "defaultValue": "[deployment().location]",
+      "metadata": {
+        "description": "Location for the deployments and the resources"
+      }
     },
     "enableDiagnostics": {
       "type": "bool",
@@ -53,7 +51,7 @@
     },
     "logAnalyticsWorkspaceName": {
       "type": "string",
-      "optional": true
+      "defaultValue": ""
     }
   },
   "variables": {
@@ -237,9 +235,6 @@
         "parameters": {
           "logAnalyticsWorkspaceName": {
             "value": "[parameters('logAnalyticsWorkspaceName')]"
-          },
-          "sku": {
-            "value": "[parameters('sku')]"
           },
           "location": {
             "value": "[parameters('location')]"
