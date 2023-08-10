@@ -17,7 +17,8 @@
       "defaultValue": true
     },
     "logAnalyticsWorkspaceName": {
-      "type": "string"
+      "type": "string",
+      "defaultValue": ""
     },
     "enableDiagnostics": {
       "type": "bool",
