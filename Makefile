@@ -37,10 +37,6 @@ production: ## set the production environment variables
 	$(eval RESOURCE_GROUP_NAME=s165p01-rg)
 	$(eval RESOURCE_NAME_PREFIX=s165p01)
 
-apply-for-qts: ## apply to service:  Database of Qualified Teachers
-	$(eval DOMAINS_ID=afqts)
-	$(eval PRODUCT_NAME=Database of Qualified Teachers)
-
 getanid: ## apply to service:  Get an Identity
 	$(eval DOMAINS_ID=getanid)
 	$(eval PRODUCT_NAME=Get an Identity)
