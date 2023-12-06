@@ -52,6 +52,9 @@ aytq:  ## apply to service:  Access Your Teaching Qualifications
 crt: aytq ## apply to service:  check-a-record of a teacher
 	$(eval DEPLOY_ENV=${DEPLOY_ENV}_crt)
 
+ctr: aytq ## apply to service:  check-a-teachers-record
+	$(eval DEPLOY_ENV=${DEPLOY_ENV}_ctr)
+
 rsm:  ## apply to service:  Refer Serious Misconduct
 	$(eval DOMAINS_ID=rsm)
 	$(eval PRODUCT_NAME=Refer Serious Misconduct)
