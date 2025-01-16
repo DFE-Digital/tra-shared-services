@@ -41,24 +41,6 @@ getanid: ## apply to service:  Get an Identity
 	$(eval DOMAINS_ID=getanid)
 	$(eval PRODUCT_NAME=Get an Identity)
 
-aytp:  ## apply to service:  Access Your Teaching Profile
-	$(eval DOMAINS_ID=aytp)
-	$(eval PRODUCT_NAME=Access Your Teaching Profile)
-
-aytq:  ## apply to service:  Access Your Teaching Qualifications
-	$(eval DOMAINS_ID=aytq)
-	$(eval PRODUCT_NAME=Access Your Teaching Qualifications)
-
-crt: aytq ## apply to service:  check-a-record of a teacher
-	$(eval DEPLOY_ENV=${DEPLOY_ENV}_crt)
-
-ctr: aytq ## apply to service:  check-a-teachers-record
-	$(eval DEPLOY_ENV=${DEPLOY_ENV}_ctr)
-
-rsm:  ## apply to service:  Refer Serious Misconduct
-	$(eval DOMAINS_ID=rsm)
-	$(eval PRODUCT_NAME=Refer Serious Misconduct)
-
 trngen:  ## apply to service:  Database of Qualified Teachers
 	$(eval DOMAINS_ID=trngen)
 	$(eval PRODUCT_NAME=Database of Qualified Teachers)
