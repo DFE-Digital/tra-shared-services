@@ -1,0 +1,29 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "actionGroupName": {
+      "type": "string"
+    },
+    "alertEmailAddress": {
+      "type": "string"
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Insights/actionGroups",
+      "apiVersion": "2022-06-01",
+      "name": "[parameters('actionGroupName')]",
+      "location": "Global",
+      "properties": {
+        "groupShortName": "[take(parameters('actionGroupName'), 12)]",
+        "emailReceivers": [
+          {
+            "name": "primary-email",
+            "emailAddress": "[parameters('alertEmailAddress')]"
+          }
+        ]
+      }
+    }
+  ]
+}
