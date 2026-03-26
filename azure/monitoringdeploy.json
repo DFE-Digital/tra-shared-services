@@ -1,0 +1,79 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "monitoringResourceGroupName": {
+      "type": "string"
+    },
+    "monitoringResourceGroupLocation": {
+      "type": "string"
+    },
+    "actionGroupName": {
+      "type": "string"
+    },
+    "alertEmailAddress": {
+      "type": "string"
+    },
+    "utcValue": {
+      "type": "string",
+      "defaultValue": "[utcNow('yyMMddHHmmss')]"
+    },
+    "tags": {
+      "type": "object"
+    }
+  },
+  "variables": {
+    "deploymentUrlBase": "https://raw.githubusercontent.com/DFE-Digital/tra-shared-services/2640-update-arm-template-with-monitoring-resources/azure/monitoring-templates/"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "[format('create-monitoring-rg-{0}', parameters('utcValue'))]",
+      "location": "[parameters('monitoringResourceGroupLocation')]",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'mon-resource-group.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "resourceGroupName": {
+            "value": "[parameters('monitoringResourceGroupName')]"
+          },
+          "location": {
+            "value": "[parameters('monitoringResourceGroupLocation')]"
+          },
+          "tags": {
+            "value": "[parameters('tags')]"
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "[format('create-monitoring-action-group-{0}-{1}', parameters('actionGroupName'), parameters('utcValue'))]",
+      "resourceGroup": "[parameters('monitoringResourceGroupName')]",
+      "dependsOn": [
+        "[format('create-monitoring-rg-{0}', parameters('utcValue'))]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'mon-action-group.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "actionGroupName": {
+            "value": "[parameters('actionGroupName')]"
+          },
+          "alertEmailAddress": {
+            "value": "[parameters('alertEmailAddress')]"
+          }
+        }
+      }
+    }
+  ]
+}
