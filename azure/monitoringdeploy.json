@@ -23,7 +23,7 @@
     }
   },
   "variables": {
-    "deploymentUrlBase": "https://raw.githubusercontent.com/DFE-Digital/tra-shared-services/2640-update-arm-template-with-monitoring-resources/azure/monitoring-templates/"
+    "deploymentUrlBase": "https://raw.githubusercontent.com/DFE-Digital/tra-shared-services/main/azure/monitoring-templates/"
   },
   "resources": [
     {
