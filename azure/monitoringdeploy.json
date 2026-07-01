@@ -23,7 +23,7 @@
     }
   },
   "variables": {
-    "deploymentUrlBase": "https://raw.githubusercontent.com/DFE-Digital/tra-shared-services/main/azure/monitoring-templates/"
+    "deploymentUrlBase": "https://raw.githubusercontent.com/DFE-Digital/tra-shared-services/1.1.15/azure/monitoring-templates/"
   },
   "resources": [
     {
