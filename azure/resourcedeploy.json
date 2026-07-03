@@ -52,10 +52,13 @@
     "logAnalyticsWorkspaceName": {
       "type": "string",
       "defaultValue": ""
+    },
+    "armTemplateTag": {
+      "type": "string"
     }
   },
   "variables": {
-    "deploymentUrlBase": "https://raw.githubusercontent.com/DFE-Digital/tra-shared-services/main/azure/templates/",
+    "deploymentUrlBase": "https://raw.githubusercontent.com/DFE-Digital/tra-shared-services/parameters('armTemplateTag')/azure/templates/",
     "deployBackupStorage": "[and(not(empty(parameters('dbBackupStorageAccountName'))),not(empty(parameters('dbBackupStorageContainerName'))))]"
   },
   "resources": [
