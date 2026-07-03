@@ -58,7 +58,7 @@
     }
   },
   "variables": {
-    "deploymentUrlBase": "https://raw.githubusercontent.com/DFE-Digital/tra-shared-services/parameters('armTemplateTag')/azure/templates/",
+    "deploymentUrlBase": "https://raw.githubusercontent.com/DFE-Digital/tra-shared-services/",
     "deployBackupStorage": "[and(not(empty(parameters('dbBackupStorageAccountName'))),not(empty(parameters('dbBackupStorageContainerName'))))]"
   },
   "resources": [
@@ -78,7 +78,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('deploymentUrlBase'),'storage-account.json')]",
+          "uri": "[concat(variables('deploymentUrlBase'), parameters('armTemplateTag'), '/azure/templates/storage-account.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
