@@ -20,10 +20,13 @@
     },
     "tags": {
       "type": "object"
+    },
+    "armTemplateTag": {
+      "type": "string"
     }
   },
   "variables": {
-    "deploymentUrlBase": "https://raw.githubusercontent.com/DFE-Digital/tra-shared-services/1.1.15/azure/monitoring-templates/"
+    "deploymentUrlBase": "https://raw.githubusercontent.com/DFE-Digital/tra-shared-services/parameters('armTemplateTag')/azure/monitoring-templates/"
   },
   "resources": [
     {
