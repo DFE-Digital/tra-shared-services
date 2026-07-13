@@ -21,8 +21,9 @@
     "tags": {
       "type": "object"
     },
-    "armTemplateTag": {
-      "type": "string"
+    "templateVersion": {
+      "type": "string",
+      "defaultValue": "v1.1.15"
     }
   },
   "variables": {
@@ -38,7 +39,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('deploymentUrlBase'), parameters('armTemplateTag'), '/azure/monitoring-templates/mon-resource-group.json')]",
+          "uri": "[concat(variables('deploymentUrlBase'), parameters('templateVersion'), '/azure/monitoring-templates/mon-resource-group.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -65,7 +66,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('deploymentUrlBase'), parameters('armTemplateTag'), '/azure/monitoring-templates/mon-action-group.json')]",
+          "uri": "[concat(variables('deploymentUrlBase'), parameters('templateVersion'), '/azure/monitoring-templates/mon-action-group.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
