@@ -23,7 +23,7 @@
     },
     "templateVersion": {
       "type": "string",
-      "defaultValue": "v1.1.15"
+      "defaultValue": "1.1.17"
     }
   },
   "variables": {
@@ -33,7 +33,7 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2020-10-01",
-      "name": "[format('create-monitoring-rg-{0}', parameters('utcValue'))]",
+      "name": "[format('create-monitoring-rg-{0}', take(parameters('utcValue'), 43))]",
       "location": "[parameters('monitoringResourceGroupLocation')]",
       "tags": "[parameters('tags')]",
       "properties": {
@@ -58,10 +58,10 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2020-10-01",
-      "name": "[format('create-monitoring-action-group-{0}-{1}', parameters('actionGroupName'), parameters('utcValue'))]",
+      "name": "[format('create-monitoring-act-grp-{0}-{1}', take(parameters('actionGroupName'), 12), take(parameters('utcValue'), 20))]",
       "resourceGroup": "[parameters('monitoringResourceGroupName')]",
       "dependsOn": [
-        "[format('create-monitoring-rg-{0}', parameters('utcValue'))]"
+        "[resourceId('Microsoft.Resources/deployments', format('create-monitoring-rg-{0}', take(parameters('utcValue'), 43)))]"
       ],
       "properties": {
         "mode": "Incremental",

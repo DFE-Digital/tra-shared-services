@@ -55,7 +55,7 @@
     },
     "templateVersion": {
       "type": "string",
-      "defaultValue": "v1.1.15"
+      "defaultValue": "1.1.17"
     }
   },
   "variables": {
